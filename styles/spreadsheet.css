@@ -1,0 +1,26 @@
+#spreadsheet{
+    margin: auto;
+    position: absolute;
+    top: 30%;
+    left: 30%;
+    border: 1px solid black;
+}
+
+td{
+    min-height: 50px;
+    min-width: 150px;
+    padding: 15px;
+    border: 1px solid black;
+}
+
+th{
+    min-height: 50px;
+    min-width: 150px;
+    padding: 15px;
+    border: 1px solid black;
+    background-color: #d0d0d0;
+}
+
+.selected{
+    background-color: #e0e0ff;
+}
