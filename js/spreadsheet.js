@@ -1,9 +1,23 @@
+function getGrade(mark) {
+    if (mark < 50.0) {
+        return 'F';
+    } else if (mark < 60.0) {
+        return 'D';
+    } else if (mark < 70.0) {
+        return 'C';
+    } else if (mark < 80.0) {
+        return 'B';
+    } else {
+        return 'A';
+    }
+}
+
 function deselectAll(){
     $('.selected').removeClass('selected');
 }
 
 function selectRow(rowIndex){
-    $(`#row${rowIndex}`).addClass('selected');
+    $(`#row${rowIndex} td`).addClass('selected');
 
 }
 
@@ -12,35 +26,28 @@ function selectColumn(colIndex){
 }
 
 $(document).ready(function(){
-    $('#col1').click(function(){
-        deselectAll();
-        selectColumn(1);
-    });
+    for(let i = 1; i < 6; i++){
+        $(`#col${i}`).click(function(){
+            deselectAll();
+            selectColumn(i);
+        });
+    }
 
-    $('#col2').click(function(){
-        deselectAll();
-        selectColumn(2);
-    });
+    for(let i = 1; i < 10; i++){
+        $(`#row${i}`).click(function(){
+            deselectAll();
+            selectRow(i);
+        });
+    }
 
-    $('#col3').click(function(){
-        deselectAll();
-        selectColumn(3);
-    });
+    // td click handling
+    ('td').each(function(){
+        $(this).click(function(){
+            deselectAll();
+            $(this).css("background-color", "e0e0ff");
+        })
+    })
 
-    $('#row1').click(function(){
-        deselectAll();
-        selectRow(1);
-    });
-
-    $('#row2').click(function(){
-        deselectAll();
-        selectRow(2);
-    });
-
-    $('#row3').click(function(){
-        deselectAll();
-        selectRow(3);
-    });
 });
 
 
