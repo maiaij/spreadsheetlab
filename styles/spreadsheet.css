@@ -2,7 +2,7 @@
     margin: auto;
     position: absolute;
     top: 30%;
-    left: 30%;
+    left: 20%;
     bottom: 30%;
     border: 1px solid black;
 }
@@ -24,4 +24,13 @@ th{
 
 .selected{
     background-color: #e0e0ff;
+}
+
+input {
+    width: 50px;
+}
+
+svg {
+    display: block;
+    margin: 0 auto;
 }
