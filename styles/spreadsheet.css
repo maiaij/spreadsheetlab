@@ -7,6 +7,14 @@
     border: 1px solid black;
 }
 
+#table{
+    min-height: 500px;
+}
+
+#graph{
+    position: relative;
+}
+
 td{
     min-height: 50px;
     min-width: 150px;

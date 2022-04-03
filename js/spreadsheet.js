@@ -20,6 +20,8 @@ function deselectAll(){
 }
 
 function selectRow(rowIndex){
+    grades = [];
+    gradeCount = 0;
     d3.selectAll("svg").remove();
     $(`#row${rowIndex} td`).addClass('selected');
     $(`#row${rowIndex} td`).each(function(){
@@ -33,6 +35,8 @@ function selectRow(rowIndex){
 }
 
 function selectColumn(colIndex){
+    grades = [];
+    gradeCount = 0;
     d3.selectAll("svg").remove();
     $(`#spreadsheet tr td:nth-child(${colIndex+1})`).addClass('selected');
     $(`#spreadsheet tr td:nth-child(${colIndex+1})`).each(function(){
@@ -87,7 +91,7 @@ function convertGrades(){
 }
 
 function createGraph(){
-    d3.select(".body").selectAll("svg").remove();
+    d3.select("#graph").selectAll("svg").remove();
 
     const stats = convertGrades();
     const width = 600;
@@ -109,7 +113,7 @@ function createGraph(){
         .domain([0, 1])
         .range([chartHeight, 0]);
 
-    let svg = d3.select('body')
+    let svg = d3.select('#graph')
         .append('svg')
         .attr('width', width)
         .attr('height', height)
@@ -119,7 +123,6 @@ function createGraph(){
         .attr('y', height -15)
         .attr("text-anchor", 'middle')
         .text('Grade Freq(%)')
-        svg.append('text')
     
     let graph = svg.append('g')
         .attr('transform', `translate(${margin},${margin})`)
@@ -144,57 +147,126 @@ function createGraph(){
 }
 
 $(document).ready(function(){
-    $("input").hide();
+    // create table
+    fetch('./data/grades.csv')
+        .then((response)=>response.text())
+        .then(function(cellData){
+            let rows = cellData.split('\n');
 
-    for(let i = 1; i < 6; i++){
-        $(`#col${i}`).click(function(){
-            deselectAll();
-            selectColumn(i);
-        });
-    }
+            const sid = [];
+            const a1 = [];
+            const a2 = [];
+            const a3 = [];
+            const midterm = [];
+            const final = [];
 
-    for(let i = 1; i < 10; i++){
-        $(`#rh${i}`).click(function(){
-            deselectAll();
-            selectRow(i);
-        });
-    }
+            // fill rows
+            for(let i = 0; i < rows.length; i++){
+                let current = rows[i].split(',');
+                
+                sid[i] = current[0];
+                a1[i] = current[1];
+                a2[i] = current[2];
+                a3[i] = current[3];
+                midterm[i] = current[4];
+                final[i] = current[5];
+            }
 
-    // td click handling
-    $('td').each(function(){
-        
-        $(this).click(function(){
-            $("input").hide();
-            deselectAll();
-            $(this).addClass('selected');
+            for(let i = 1; i < rows.length; i++){
+                a1[i] = (a1[i]/10) * 100;
+                a2[i] = (a2[i]/10) * 100;
+                a3[i] = (a3[i]/10) * 100;
+            }
 
-            var cell = $(this).attr('class');
-            cell = cell.split(' ');
+            const rawData = [sid, a1, a2, a3, midterm, final];
 
-            var input = '.i' + cell[1] + cell[2];
-            var cellInput = $(input);
+            var table = "<table id='spreadsheet'>";
+            
+            // create table headers
+            table += "<tr>";
+            for(let i = 0; i < rawData.length; i++){
+                table += `<th id='col${i}' class='c 0 ${i}'>`;
+                table += rawData[i][0];
+                table += '</th>';
+            }
+            table += "</tr>";
 
-            var data = '.d' + cell[1] + cell[2];
-            var cellData = $(data);
+            //  create data cells
+            for(let i = 1; i < rows.length; i++){
 
-            var cellText = $(cellData).text();
-            $(cellData).text("");
+                table += `<tr id='row${i}'>`
+                table += `<th id='rh${i}' class='c ${i} 0'>`;
+                table += rawData[0][i];
+                table += '</th>';
 
-            $(cellInput).show();
-            $(cellData).val(cellText);
-            var n = cellText;
-
-            $(cellInput).keypress(function(event){
-                var keycode = (event.keyCode ? event.keyCode : event.which);
-                //13 is enter
-                if(keycode == '13'){
-                    $(cellInput).hide();
-                    n = $(cellInput).val();
-                    $(cellData).text(n);
+                for(let j = 1; j < rawData.length; j++){
+                    table += `<td class='c ${i} ${j}'>`;
+                    table += `<input type='text' class='i${i}${j}'>`;
+                    table += `<p class='d${i}${j}'> ${rawData[j][i]} </p>`;
+                    table += '</td>';
                 }
-            });
-        });
-    })
+
+                table += '</tr>';
+            } 
+
+            table += '</table>';
+            $('#table').append(table);
+
+            $("input").hide();
+
+            for(let i = 1; i < 6; i++){
+                $(`#col${i}`).click(function(){
+                    deselectAll();
+                    selectColumn(i);
+                });
+            }
+
+            for(let i = 1; i < 10; i++){
+                $(`#rh${i}`).click(function(){
+                    deselectAll();
+                    selectRow(i);
+                });
+            }
+
+            // td click handling
+            $('td').each(function(){
+                
+                $(this).click(function(){
+                    $("input").hide();
+                    deselectAll();
+                    $(this).addClass('selected');
+
+                    var cell = $(this).attr('class');
+                    cell = cell.split(' ');
+
+                    var input = '.i' + cell[1] + cell[2];
+                    var cellInput = $(input);
+
+                    var data = '.d' + cell[1] + cell[2];
+                    var cellData = $(data);
+
+                    var cellText = $(cellData).text();
+                    $(cellData).text("");
+
+                    $(cellInput).show();
+                    $(cellData).val(cellText);
+                    var n = cellText;
+
+                    $(cellInput).keypress(function(event){
+                        var keycode = (event.keyCode ? event.keyCode : event.which);
+                        //13 is enter
+                        if(keycode == '13'){
+                            $(cellInput).hide();
+                            n = $(cellInput).val();
+                            $(cellData).text(n);
+                        }
+                    });
+                });
+
+        })
+
+            
+        })
 
 });
 
